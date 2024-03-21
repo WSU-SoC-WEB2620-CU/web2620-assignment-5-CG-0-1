@@ -1,40 +1,91 @@
-// Your styles go here
-body {
-  background: #202020 url('/images/footer-bg.jpg') repeat;
-  min-width: 1200px;
+/* Instructions for this assignment:
+ * Use multiple-line and single-line comments (At least 5 comments each)
+ * Nest as many of the rules as you can
+ * Create at least 10 variables and use them
+ * Create and use at least 2 mixins without arguments
+ * Create a mixin named make-column with a single $width argument
+ * Create a list whose items are the numbers 1 through 12.
+ * Loop through this list and use interpolation to generate the 
+ * .column-1 through .column-12 rules dynamically.
+ * Extract all the rules involving the .nav selector into a new .scss file
+ */
+
+// My variables
+$absolute-position: absolute;
+$block: block;
+$charcoal: #333;
+$cyan-blue: #0d6efd;
+$dark-color: rgba(0, 0, 0, .1);
+$gray-color: #303030;
+$inline-block: inline-block;
+$light-color: rgba(255, 255, 255, .4);
+$relative-position: relative;
+$white: #FFF;
+
+// My mixins without an argument
+@mixin zeroes {
   margin: 0;
   padding: 0;
 }
 
-body,
-input,
-textarea,
-select {
+@mixin common {
   font-family: 'Roboto Condensed', sans-serif;
   font-weight: 300;
   font-size: 11pt;
   line-height: 1.75em;
 }
 
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
+/* This is an extra mixin, 
+ * which I'm going to use later in the code
+ */
+@mixin general-headings { 
   letter-spacing: 1px;
   text-transform: uppercase;
   font-weight: 300;
 }
 
-h1 a,
-h2 a,
-h3 a,
-h4 a,
-h5 a,
-h6 a {
-  color: inherit;
-  text-decoration: none;
+// The mixin with an argument
+@mixin make-column($width) {
+  // List from 1 through 12
+  $numbers: 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12;  
+  
+  /* Loop through all the elements in the list, 
+   * then calculate the width based of the number of columns
+   */
+  @each $number in $numbers {
+    .column-#{$number} {
+      width: ($width/12)*$number;
+    }
+  }
+}
+
+// Importing from the "nav.scss" file
+@import "nav";
+
+body {
+  @include zeroes;
+  background: #202020 url('/images/footer-bg.jpg') repeat;
+  min-width: 1200px;
+}
+
+body,
+input,
+textarea,
+select {
+  @include common;
+}
+
+/* I know it is not in the instructions, 
+ * but I really hated how long are the h1-6 were stacked
+ */
+@for $i from 1 through 6 {
+  h#{$i} {
+      @include general-headings;
+      a {
+          color: inherit;
+          text-decoration: none;
+      }
+  }
 }
 
 strong,
@@ -49,19 +100,21 @@ i {
 }
 
 a {
-  color: #0d6efd;
+  color: $cyan-blue;
+}
+
+sub,
+sup {
+  position: $relative-position;
+  font-size: 0.8em;
 }
 
 sub {
-  position: relative;
   top: 0.5em;
-  font-size: 0.8em;
 }
 
 sup {
-  position: relative;
   top: -0.5em;
-  font-size: 0.8em;
 }
 
 hr {
@@ -80,38 +133,46 @@ table {
 header {
   margin-bottom: 2em;
   line-height: 1.7em;
+
+  h2 {
+    font-size: 2.5em;
+  }
+
+  .byline {
+    display: $block;
+    margin: 0.5em 0 0 0;
+    padding: 0 0 0.5em 0;
+    text-transform: uppercase;
+    font-size: 1.4em;
+  }
 }
 
-header h2 {
-  font-size: 2.5em;
+section {
+  margin-bottom: 3em;
+
+  > :last-child {
+    margin-bottom: 0;
+  }
+
+  &:last-child {
+    margin-bottom: 0;
+  }
 }
 
-header .byline {
-  display: block;
-  margin: 0.5em 0 0 0;
-  padding: 0 0 0.5em 0;
-  text-transform: uppercase;
-  font-size: 1.4em;
-}
-
-section,
 article {
   margin-bottom: 3em;
-}
 
-section > :last-child,
-article > :last-child {
-  margin-bottom: 0;
-}
+  > :last-child {
+    margin-bottom: 0;
+  }
 
-section:last-child,
-article:last-child {
-  margin-bottom: 0;
+  &:last-child {
+    margin-bottom: 0;
+  }
 }
 
 blockquote {
-  margin: 0;
-  padding: 0;
+  @include zeroes;
   border: none;
   font-style: normal;
 }
@@ -124,203 +185,150 @@ footer {
   width: 1200px;
   margin-left: auto;
   margin-right: auto;
-}
 
-.container.small {
-  width: 900px;
-}
+  .small {
+    width: 900px;
+  }
 
-.container.big {
-  width: 100%;
-  max-width: 1500px;
-  min-width: 1200px;
-}
-
-.row section,
-.row article {
-  margin-bottom: 0;
-}
-
-.row [class*='column-'] {
-  padding: 50px 0 0 50px;
-  float: left;
-  box-sizing: border-box;
+  .big {
+    width: 100%;
+    max-width: 1500px;
+    min-width: 1200px;
+  }
 }
 
 .row {
   margin-left: -50px;
+
+  section,
+  article {
+    margin-bottom: 0;
+  }
+  
+  [class*='column-'] {
+    padding: 50px 0 0 50px;
+    float: left;
+    box-sizing: border-box;
+  }
+
+  &:after {
+    content: '';
+    display: $block;
+    clear: both;
+    height: 0;
+  }
 }
 
-.row:after {
-  content: '';
-  display: block;
-  clear: both;
-  height: 0;
-}
-
-.column-1,
-.column-2,
-.column-3,
-.column-4,
-.column-5,
-.column-6,
-.column-7.column-8,
-.column-9,
-.column-10,
-.column-11,
-.column-12 {
-  width: 100%;
+/* Again, 
+ * I know it is not in the instructions, 
+ * but if I can make it more compact I will
+ */
+@for $i from 1 through 12 {
+  .column-#{$i} {
+      width: 100;
+  }
 }
 
 @media all and (min-width: 576px) {
-  .column-1 {
-    width: 8.33333%;
-  }
-
-  .column-2 {
-    width: 16.66667%;
-  }
-
-  .column-3 {
-    width: 25%;
-  }
-
-  .column-4 {
-    width: 33.33333%;
-  }
-
-  .column-5 {
-    width: 41.66667%;
-  }
-
-  .column-6 {
-    width: 50%;
-  }
-
-  .column-7 {
-    width: 58.33333%;
-  }
-
-  .column-8 {
-    width: 66.66667%;
-  }
-
-  .column-9 {
-    width: 75%;
-  }
-
-  .column-10 {
-    width: 83.33333%;
-  }
-
-  .column-11 {
-    width: 91.66667%;
-  }
-
-  .column-12 {
-    width: 100%;
-  }
+  @include make-column(100%);
 }
 
 .image {
-  display: inline-block;
-}
+  display: $inline-block;
 
-.image img {
-  display: block;
-  width: 100%;
-}
+  img {
+    width: 100%;
+    display: $block;
+  }
 
-.image.featured {
-  display: block;
-  width: 100%;
-  margin: 0 0 2em 0;
-}
+  .featured {
+    width: 100%;
+    display: $block;
+    margin: 0 0 2em 0;
+  }
 
-.image.full {
-  display: block;
-  width: 100%;
-  margin-bottom: 2em;
-}
+  .full {
+    width: 100%;
+    display: $block;
+    margin-bottom: 2em;
+  }
+  
+  .left {
+    float: left;
+    margin: 0 2em 2em 0;
+  }
 
-.image.left {
-  float: left;
-  margin: 0 2em 2em 0;
-}
+  .centered {
+    display: $block;
+    margin: 0 0 2em 0;
 
-.image.centered {
-  display: block;
-  margin: 0 0 2em 0;
-}
-
-.image.centered img {
-  margin: 0 auto;
-  width: auto;
+    img {
+      width: auto;
+      margin: 0 auto;
+    }
+  }
 }
 
 ul.default {
-  margin: 0;
-  padding: 0;
+  @include zeroes;
   list-style: none;
-}
 
-ul.default li {
-  display: block;
-  padding: 2em 0em 1.25em 0em;
-  border-top: 1px solid #303030;
-}
+  li {
+    display: $block;
+    padding: 2em 0em 1.25em 0em;
+    border-top: 1px solid $gray-color;
 
-ul.default li:first-child {
-  padding-top: 0em;
-  border-top: none;
-}
+    &:first-child {
+      padding-top: 0em;
+      border-top: none;
+    }
+  }
 
-ul.default a {
-  text-decoration: none;
-  color: rgba(255, 255, 255, .5);
-}
+  a {
+    text-decoration: none;
+    color: rgba(255, 255, 255, .5);
 
-ul.default a:hover {
-  text-decoration: underline;
+    &:hover {
+      text-decoration: underline;
+    }
+  }
 }
 
 ul.style1 {
-  margin: 0;
-  padding: 0;
+  @include zeroes;
   list-style: none;
-}
 
-ul.style1 li {
-  padding: 0.60em 0em;
-  border-top: 1px solid;
-  border-color: rgba(0, 0, 0, .1);
-}
+  li {
+    padding: 0.60em 0em;
+    border-top: 1px solid;
+    border-color: $dark-color;
 
-ul.style1 li:first-child {
-  padding-top: 0;
-  border-top: 0;
+    &:first-child {
+      padding-top: 0;
+      border-top: 0;
+    }
+  }
 }
 
 ul.style2 {
-  margin: 0;
-  padding: 0;
+  @include zeroes;
   list-style: none;
-}
 
-ul.style2 li {
-  padding: 1.90em 0em 1.60em 0em;
-  border-top: 1px solid;
-  border-color: rgba(0, 0, 0, .1);
-}
+  li {
+    padding: 1.90em 0em 1.60em 0em;
+    border-top: 1px solid;
+    border-color: $dark-color;
 
-ul.style2 li:first-child {
-  padding-top: 0;
-  border-top: 0;
-}
+    &:first-child {
+      padding-top: 0;
+      border-top: 0;
+    }
+  }
 
-ul.style2 img {
-  float: left;
-  padding-right: 1em;
+  img {
+    float: left;
+    padding-right: 1em;
+  }
 }
 
 ul.style5 {
@@ -328,105 +336,68 @@ ul.style5 {
   margin: 0em 0em 1em 0em;
   padding: 0em;
   list-style: none;
-}
 
-ul.style5 li {
-  float: left;
-  padding: 0.25em 0.25em;
-  line-height: 0;
+  li {
+    float: left;
+    padding: 0.25em 0.25em;
+    line-height: 0;
+  }
 }
 
 .button {
-  position: relative;
-  display: inline-block;
+  position: $relative-position;
+  display: $inline-block;
   margin-top: 0.5em;
   padding: 0.50em 1.5em;
-  background: #0d6efd;
+  background: $cyan-blue;
   border-radius: 6px;
   text-decoration: none;
   text-transform: uppercase;
   font-size: 1.1em;
-  color: #FFF;
+  color: $white;
   transition: color 0.35s ease-in-out, background-color 0.35s ease-in-out;
   cursor: pointer;
-}
 
-.button:hover {
-  background: #0d6efd;
-  color: #FFF !important;
+  &:hover {
+    background: $cyan-blue;
+    color: $white !important;
+  }
 }
 
 .header {
-  position: relative;
-  background: #FFF;
-}
+  position: $relative-position;
+  background: $white;
 
-.header .container {
-  position: relative;
-  padding: 4em 0em;
+  .container {
+    position: $relative-position;
+    padding: 4em 0em;
+  }
 }
 
 .logo {
-  position: absolute;
+  position: $absolute-position;
   left: 0em;
   top: 3em;
-}
 
-.logo a {
-  display: block;
-  text-decoration: none;
-  font-size: 2.8em;
-  font-weight: 600;
-}
-
-.nav {
-  position: absolute;
-  right: 0em;
-  top: 2.2em;
-}
-
-.nav ul {
-  list-style-type: none;
-}
-
-.nav ul li {
-  float: left;
-}
-
-.nav ul li:last-child {
-  padding-right: 0;
-}
-
-.nav ul li a,
-.nav ul li span {
-  display: block;
-  margin-left: 0.7em;
-  padding: 0.80em 1.2em;
-  letter-spacing: 0.06em;
-  text-decoration: none;
-  text-transform: uppercase;
-  font-size: 1.1em;
-  outline: 0;
-  color: #333;
-}
-
-.nav li.active a {
-  background: #0d6efd;
-  border-radius: 5px;
-  color: #FFF;
+  a {
+    display: $block;
+    text-decoration: none;
+    font-size: 2.8em;
+    font-weight: 600;
+  }
 }
 
 .banner {
-  position: relative;
+  position: $relative-position;
   padding: 12em 0em;
   background: url('/images/banner.jpg') no-repeat center;
   background-size: cover;
-  color: #fff;
+  color: $white;
 }
 
 .page {
-  position: relative;
-  background: #fff;
+  position: $relative-position;
+  background: $white;
 }
 
 .main {
@@ -434,60 +405,66 @@ ul.style5 li {
   border-color: rgba(0, 0, 0, .2);
 }
 
-.sidebar header h2 {
-  font-size: 1.6em;
+.sidebar {
+  header {
+    h2 {
+      font-size: 1.6em;
+    }
+  }
 }
 
 .footer {
-  position: relative;
-  color: rgba(255, 255, 255, .4);
-}
+  position: $relative-position;
+  color: $light-color;
 
-.footer h2 {
-  padding-bottom: 1.5em;
-  font-size: 1.6em;
-  color: #FFF;
-}
+  h2 {
+    padding-bottom: 1.5em;
+    font-size: 1.6em;
+    color: $white;
+  }
 
-.footer strong {
-  color: rgba(255, 255, 255, .7);
+  strong {
+    color: rgba(255, 255, 255, .7);
+  }
 }
 
 .copyright {
-  position: relative;
+  position: $relative-position;
   padding: 3em 0em;
-  border-top: 1px solid #303030;
+  border-top: 1px solid $gray-color;
   letter-spacing: 1px;
   text-align: center;
-  color: rgba(255, 255, 255, .4);
-}
+  color: $light-color;
 
-.copyright a {
-  text-decoration: none;
-  color: rgba(255, 255, 255, .4) !important;
+  a {
+    text-decoration: none;
+    color: $light-color !important;
+  }
 }
 
 .marketing {
-  position: relative;
-}
+  position: $relative-position;
 
-.marketing header h2 {
-  font-size: 1.6em;
+  header {
+    h2 {
+      font-size: 1.6em;
+    }
+  }
 }
 
 .featured {
-  position: relative;
-}
+  position: $relative-position;
 
-.featured .divider {
-  border-bottom: 1px solid #303030;
-}
+  .divider {
+    border-bottom: 1px solid $gray-color;
+  }
 
-.featured .box {
-  background: #FFF;
-  padding: 1.4em;
-  font-size: 0.95em;
-  border-radius: 5px;
+  .box {
+    background: $white;
+    padding: 1.4em;
+    font-size: 0.95em;
+    border-radius: 5px;
+  }
 }
 
 .balloon {
@@ -496,13 +473,13 @@ ul.style5 li {
   border-radius: 5px;
   line-height: 180%;
   font-size: 1.2em;
-  color: #333;
+  color: $charcoal;
+
+  strong {
+    color: $charcoal !important;
+  }
 }
 
 .ballon-bgbtm {
   height: 1.87em;
-}
-
-.balloon strong {
-  color: #333 !important;
 }
